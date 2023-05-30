@@ -1,0 +1,3 @@
+export const SERVICE_MESSAGES = {
+  USER_MANAGEMENT: 'USER_SERVICE',
+};
