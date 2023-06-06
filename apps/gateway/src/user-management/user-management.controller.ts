@@ -13,15 +13,7 @@ import { Observable } from 'rxjs';
 import { CreateUserDTO } from 'apps/user-management/src/users/dto';
 import { IUser } from 'apps/user-management/src/users/interfaces';
 import { NullValidationPipe, ValidationPipe, TrimPipe } from '../common/pipes';
-import {
-  ApiBasicAuth,
-  ApiBearerAuth,
-  ApiResponse,
-  ApiOperation,
-  ApiTags,
-  ApiHeader,
-  ApiExcludeEndpoint,
-} from '@nestjs/swagger';
+import { ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 /**
  * User Controller
