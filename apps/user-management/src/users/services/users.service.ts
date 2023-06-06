@@ -49,7 +49,7 @@ export class UsersService {
       const userDTO = new UserDTO();
       userDTO.email = createUserDTO.email.toLowerCase();
       const isUserExist = await this.userModel.findOne({
-        $or: [{ email: userDTO.email }, { mobile: userDTO.mobile }],
+        email: userDTO.email,
       });
       if (isUserExist) {
         return Promise.reject(
@@ -62,7 +62,10 @@ export class UsersService {
       userDTO.otp = Math.round(1000 + Math.random() * 9000);
       userDTO.otpExpiresAt = Date.now() + 15 * 60 * 1000;
 
-      const registerModel = new this.userModel(userDTO);
+      const registerModel = new this.userModel({
+        ...createUserDTO,
+        ...userDTO,
+      });
       const newUser = await registerModel.save();
 
       const token = {

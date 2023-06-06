@@ -1,11 +1,10 @@
-import { Controller, UseFilters, Logger, Post } from '@nestjs/common';
+import { Controller, UseFilters, Logger } from '@nestjs/common';
 import { Payload, MessagePattern, RpcException } from '@nestjs/microservices';
 import { CreateUserDTO } from '../dto';
 import { IUser } from '../interfaces';
 import { ExceptionFilter } from 'libs/shared/src/filters';
 import { USER_MESSAGES } from 'libs/shared/src/constants/message.constant';
 import { UsersService } from '../services';
-import { Content } from 'libs/shared/src/decorators';
 
 @Controller('users')
 export class UsersController {
@@ -23,13 +22,12 @@ export class UsersController {
    */
   @UseFilters(new ExceptionFilter())
   @MessagePattern(USER_MESSAGES.REGISTER)
-  @Post()
-  async register(
-    @Content()
+  register(
+    @Payload()
     userDTO: CreateUserDTO,
   ): Promise<IUser> {
     try {
-      return await this.usersService.register(userDTO);
+      return this.usersService.register(userDTO);
     } catch (err) {
       throw new RpcException(err);
     }
