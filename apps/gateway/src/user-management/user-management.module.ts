@@ -4,6 +4,8 @@ import { UserManagementController } from './user-management.controller';
 import { QUEUES, SERVICE_MESSAGES } from '@app/shared/constants';
 import 'dotenv/config';
 
+const amqpUrl = process.env.RABBITMQ_TEST || 'amqp://localhost:5673';
+
 @Module({
   imports: [
     ClientsModule.register([
@@ -11,7 +13,7 @@ import 'dotenv/config';
         name: SERVICE_MESSAGES.USER_MANAGEMENT,
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.RABBITMQ_TEST],
+          urls: [amqpUrl],
           queue: QUEUES.USERS_QUEUE,
           queueOptions: {
             durable: false,

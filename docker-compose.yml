@@ -1,0 +1,81 @@
+version: "3.8"
+services:
+  gateway:
+    container_name: gateway
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    restart: always
+    env_file: .env
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    volumes:
+      - ./gateway:/usr/src/app
+    command: sh -c '/bin/wait-for-it.sh rabbitmq:5672 --timeout=30 -- npm run start:dev'
+    networks:
+      - rabbitmq_nodejs
+
+  trip-go:
+    container_name: trip-go
+    build:
+      context: .
+      dockerfile: Dockerfile.trip-go
+    restart: always
+    env_file: .env
+    ports:
+      - 6000:6000
+    depends_on:
+      - mongodb
+      - rabbitmq
+    volumes:
+      - ./trip-go:/usr/src/app
+    command: sh -c '/bin/wait-for-it.sh rabbitmq:5672 --timeout=30 -- npm run start:dev'
+    networks:
+      - rabbitmq_nodejs
+
+  user-management:
+    container_name: user-management
+    build:
+      context: .
+      dockerfile: Dockerfile.user-management
+    restart: always
+    env_file: .env
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongodb
+      - rabbitmq
+    volumes:
+      - ./user-management:/usr/src/app
+    command: sh -c '/bin/wait-for-it.sh rabbitmq:5672 --timeout=30 -- npm run start:dev'
+    networks:
+      - rabbitmq_nodejs
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+    networks:
+      - rabbitmq_nodejs
+
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: 'rabbitmq'
+    tty: true
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+        - rabbitmq_nodejs
+
+networks:
+  rabbitmq_nodejs:
+    driver: bridge
